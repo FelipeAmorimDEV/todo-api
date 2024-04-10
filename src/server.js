@@ -1,17 +1,14 @@
 import http from 'node:http'
-import Database from './database.js'
 import { json } from './middleware/json.js'
-import { routes } from './routes.js'
+import { todoRoutes } from './routes.js'
 import extractSearchParams from './utils/extract-search-params.js'
-
-const database = new Database()
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req
 
   await json(req, res)
 
-  const route = routes.find(route => route.method === method && route.path.test(url))
+  const route = todoRoutes.find(route => route.method === method && route.path.test(url))
   if (route) {
     const routeParams = req.url.match(route.path)
     const { query, ...params } = routeParams.groups
