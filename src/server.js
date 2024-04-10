@@ -59,6 +59,13 @@ const server = http.createServer(async (req, res) => {
       path: buildRouterPath('/todos/:id'),
       handle: (req, res) => {
         const { id } = req.params
+        const oRecursoExisteNoBancoDeDados = database.select('todos').some(recurso => recurso.id === id)
+
+        if (!oRecursoExisteNoBancoDeDados) {
+          const status = { status: 'O recurso não existe no banco de dados'}
+          return res.writeHead(404).end(JSON.stringify(status))
+        }
+
         database.delete('todos', id)
 
         return res.writeHead(204).end('')
@@ -70,6 +77,13 @@ const server = http.createServer(async (req, res) => {
       handle: (req, res) => {
         const { title, description } = req.body
         const { id } = req.params
+
+        const oRecursoExisteNoBancoDeDados = database.select('todos').some(recurso => recurso.id === id)
+
+        if (!oRecursoExisteNoBancoDeDados) {
+          const status = { status: 'O recurso não existe no banco de dados'}
+          return res.writeHead(404).end(JSON.stringify(status))
+        }
 
         if (title === undefined) {
           const status = { status: 'title is required' }
@@ -91,6 +105,13 @@ const server = http.createServer(async (req, res) => {
       path: buildRouterPath('/todos/:id/complete'),
       handle: (req, res) => {
         const { id } = req.params
+        const oRecursoExisteNoBancoDeDados = database.select('todos').some(recurso => recurso.id === id)
+
+        if (!oRecursoExisteNoBancoDeDados) {
+          const status = { status: 'O recurso não existe no banco de dados'}
+          return res.writeHead(404).end(JSON.stringify(status))
+        }
+        
         database.update('todos', id, { completed_at: new Date(), updated_at: new Date() })
 
         return res.writeHead(204).end('')
