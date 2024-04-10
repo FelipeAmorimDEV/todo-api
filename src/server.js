@@ -44,7 +44,16 @@ const server = http.createServer(async (req, res) => {
     const routeParams = url.match(buildRouterPath('/todos/:id'))
     const { id } = routeParams.groups
     const { title, description } = req.body
-    database.update('todos', id, { title, description })
+    database.update('todos', id, { title, description})
+
+    return res.writeHead(204).end()
+  }
+
+  if (method === 'PATCH' && buildRouterPath('/todos/:id').test(url)) {
+    const routeParams = url.match(buildRouterPath('/todos/:id'))
+    const { id } = routeParams.groups
+    const { completed_at } = req.body
+    database.update('todos', id, { completed_at })
 
     return res.writeHead(204).end()
   }
