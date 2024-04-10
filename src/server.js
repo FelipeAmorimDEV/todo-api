@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import Database from './database.js'
 import { json } from './middleware/json.js'
 import buildRouterPath from './utils/build-router-path.js'
+import extractSearchParams from './utils/extract-search-params.js'
 const database = new Database()
 
 const server = http.createServer(async (req, res) => {
@@ -10,8 +11,12 @@ const server = http.createServer(async (req, res) => {
 
   await json(req,res)
 
-  if (method === 'GET' && url === '/todos') {
-    const todos = database.select('todos')
+  if (method === 'GET' && buildRouterPath('/todos').test(url)) {
+    const routeParams = url.match(buildRouterPath('/todos'))
+    const { query } = routeParams.groups
+    const params = query ? extractSearchParams(query) : null
+   
+    const todos = database.select('todos', params)
     
     return res.writeHead(200).end(JSON.stringify(todos))
   }
@@ -53,7 +58,7 @@ const server = http.createServer(async (req, res) => {
     if (title === undefined  || description === undefined) {
       return res.writeHead(400).end(JSON.stringify({ status: "request body is invalid" }))
     }
-    
+
     database.update('todos', id, { title, description, updated_at: new Date() })
 
     return res.writeHead(204).end()
@@ -62,7 +67,7 @@ const server = http.createServer(async (req, res) => {
   if (method === 'PATCH' && buildRouterPath('/todos/:id/complete').test(url)) {
     const routeParams = url.match(buildRouterPath('/todos/:id'))
     const { id } = routeParams.groups
-    const { completed_at } = req.body
+    
     database.update('todos', id, { completed_at, updated_at: new Date() })
 
     return res.writeHead(204).end()
