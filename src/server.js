@@ -6,7 +6,7 @@ import buildRouterPath from './utils/build-router-path.js'
 const database = new Database()
 
 const server = http.createServer(async (req, res) => {
-  const { method, url, params } = req
+  const { method, url } = req
 
   await json(req,res)
 
@@ -36,6 +36,15 @@ const server = http.createServer(async (req, res) => {
     const routeParams = url.match(buildRouterPath('/todos/:id'))
     const { id } = routeParams.groups
     database.delete('todos', id)
+
+    return res.writeHead(204).end()
+  }
+
+  if (method === 'PUT' && buildRouterPath('/todos/:id').test(url)) {
+    const routeParams = url.match(buildRouterPath('/todos/:id'))
+    const { id } = routeParams.groups
+    const { title, description } = req.body
+    database.update('todos', id, { title, description })
 
     return res.writeHead(204).end()
   }
