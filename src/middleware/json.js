@@ -6,12 +6,14 @@ for await (const chunk of req) {
 }
 
 const fullData = Buffer.concat(buffers).toString()
-console.log(fullData)
+
 try{
   req.body = JSON.parse(fullData)
 }catch{
   req.body = null
 }
+
+res.setHeader('Content-Type', 'application/json')
 }
 
 export { json }
