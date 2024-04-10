@@ -21,9 +21,8 @@ export default class Database {
     let data = this.#database[table] || []
     
     if (search) {
-      data = data.filter(row => {
-        return Object.entries(search).some(([key,value]) => row[key].toLowerCase().includes(value.toLowerCase()))
-      })
+      data = data.filter(row => Object.entries(search)
+        .some(([key, value]) => row[key].toLowerCase().includes(value.toLowerCase())))
     }
     
     return data
