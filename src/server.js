@@ -1,11 +1,13 @@
 import http from 'node:http'
 import { randomUUID } from 'node:crypto'
 import Database from './database.js'
-
+import { json } from './middleware/json.js'
 const database = new Database()
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const { method, url } = req
+
+  await json(req,res)
 
   if (method === 'GET' && url === '/todos') {
     const todos = database.select('todos')
@@ -14,15 +16,17 @@ const server = http.createServer((req, res) => {
   }
 
   if (method === 'POST' && url === '/todos') {
+    const { title, description } = req.body
+    
     const data = {
       id: randomUUID(),
-      title: 'Ignite Node',
-      description: 'Terminar o modulo 1',
       completed_at: null,
       created_at: new Date(),
-      updated_at: null
+      updated_at: null,
+      title,
+      description
     }
-    
+
     database.insert('todos', data)
     return res.writeHead(201).end('')
   }
