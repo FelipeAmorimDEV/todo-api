@@ -33,7 +33,11 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (method === 'DELETE' && buildRouterPath('/todos/:id').test(url)) {
-    
+    const routeParams = url.match(buildRouterPath('/todos/:id'))
+    const { id } = routeParams.groups
+    database.delete('todos', id)
+
+    return res.writeHead(204).end()
   }
 
   return res.writeHead(404).end('Not Found')
