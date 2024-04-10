@@ -49,6 +49,11 @@ const server = http.createServer(async (req, res) => {
     const routeParams = url.match(buildRouterPath('/todos/:id'))
     const { id } = routeParams.groups
     const { title, description } = req.body
+
+    if (title === undefined  || description === undefined) {
+      return res.writeHead(400).end(JSON.stringify({ status: "request body is invalid" }))
+    }
+    
     database.update('todos', id, { title, description, updated_at: new Date() })
 
     return res.writeHead(204).end()
