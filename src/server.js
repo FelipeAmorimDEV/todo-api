@@ -18,6 +18,11 @@ const server = http.createServer(async (req, res) => {
 
   if (method === 'POST' && url === '/todos') {
     const { title, description } = req.body
+
+
+    if (title === undefined  || description === undefined) {
+      return res.writeHead(400).end(JSON.stringify({ status: "request body is invalid" }))
+    }
     
     const data = {
       id: randomUUID(),
@@ -49,7 +54,7 @@ const server = http.createServer(async (req, res) => {
     return res.writeHead(204).end()
   }
 
-  if (method === 'PATCH' && buildRouterPath('/todos/:id').test(url)) {
+  if (method === 'PATCH' && buildRouterPath('/todos/:id/complete').test(url)) {
     const routeParams = url.match(buildRouterPath('/todos/:id'))
     const { id } = routeParams.groups
     const { completed_at } = req.body
